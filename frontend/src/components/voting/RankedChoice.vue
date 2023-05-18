@@ -122,7 +122,7 @@ div.row.header {
 div.table {
     display: table;
     max-width: 800px;
-    width: 70%;
+    width: 90%;
     border-collapse: separate;
     border-spacing: 0;
 }
