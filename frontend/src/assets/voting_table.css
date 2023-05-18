@@ -1,0 +1,44 @@
+div.row:hover {
+    background-color: #E8AB8C;
+}
+
+div.row:nth-child(2n):hover {
+    background-color: #E8AB8C;
+}
+
+div.row:nth-child(2n) {
+    background-color: #FAD8C0;
+}
+
+div.row {
+    background-color: #FDE5D0;
+}
+
+div.row.header {
+    background-color: #A2F4B9;
+}
+
+div.table {
+    display: table;
+    max-width: 800px;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+div.row {
+    display: table-row;
+}
+
+div.col {
+    display: table-cell;
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+div.col.rank {
+    width: 10px;
+    text-align: center;
+}

@@ -1,0 +1,2 @@
+DROP TABLE single_non_transferable_elections;
+DROP TABLE single_non_transferable_votes;

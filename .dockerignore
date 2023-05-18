@@ -1,0 +1,8 @@
+.pg_data/**
+target/**
+frontend/dist/**
+database/**
+postgres/**
+
+frontend/node_modules/**
+

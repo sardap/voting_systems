@@ -1,0 +1,24 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Launch Backend",
+			"program": "${workspaceFolder}/target/debug/backend.exe",
+			"args": [],
+			"cwd": "${workspaceFolder}",
+			"env": {
+				"RUST_BACKTRACE": "1",
+				"RUST_LOG": "debug",
+				"BUILD_DIR": "${workspaceFolder}/frontend/dist",
+				"DATABASE_CONNECTION": "postgresql://postgres:example@localhost:5432/voting",
+				"VOTE_AUTH_STRING": "aae5a1bb-0f2b-4f62-930f-56ce3a90768d",
+			},
+			"preLaunchTask": "make",
+		},
+	]
+}

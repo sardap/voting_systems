@@ -1,0 +1,95 @@
+@import './base.css';
+
+#app {
+  margin: 0 auto;
+  padding: 2rem;
+
+  font-weight: normal;
+}
+
+.title {
+  text-align: center;
+}
+
+:root {
+  /* Define your color variables for the light theme here */
+  --background-color: #C2E0F4;
+  --text-color: #000000;
+  /* Add more custom colors as needed */
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+
+table {
+  border-collapse: collapse;
+  min-width: 50%;
+  max-width: 95%;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+  border-top: 2px solid black;
+}
+
+table tr td button {
+  margin: 5px;
+}
+
+table tr td,
+table tr th {
+  padding: 3px;
+  border-bottom: 2px solid black;
+  text-align: center;
+}
+
+table tr:hover {
+  background-color: #E8AB8C;
+}
+
+table tr:nth-child(2n):hover {
+  background-color: #E8AB8C;
+}
+
+
+table tr:nth-child(2n) {
+  background-color: #FAD8C0;
+}
+
+table tr {
+  background-color: #FDE5D0;
+}
+
+table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: #A88DC3;
+  /* Match the table header background color with the root background color */
+  color: black;
+  /* Update text color to black */
+}
+
+.first-col {
+  background-color: #A88DC3;
+}
+
+.error-text {
+  color: red;
+  font-size: large;
+}
+
+.vote-button {
+  margin-top: 20px;
+  min-width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 80px;
+}
+
+.warning {
+  color: black;
+  font-size: large;
+  font-weight: 600;
+}
