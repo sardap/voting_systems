@@ -11,7 +11,7 @@ I was frustrated out how limited quick easy only voting systems were. Also how l
 Yeah it is. This isn't meant to be a wow look at how good this rust code is. I use way to many macros but I wanted it done so don't judge me.
 
 ## How to use
-Unforintalty I don't want to open up the whole internet to be able to use this to create elections. 
+Fortunately I don't want to open up the whole internet to be able to use this to create elections. 
 
 However I have made these examples and you can view the results
 * Preferential Voting
