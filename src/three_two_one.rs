@@ -204,24 +204,24 @@ pub fn get_result(election: &ThreeTwoOneElection, votes: &[ThreeTwoOneVote]) -> 
     }
 
     // Then sort by bad count
-    semifinalists.sort_by(|a, b| a.bad_count.cmp(&b.bad_count));
+    semifinalists.sort_by(|a, b| b.bad_count.cmp(&a.bad_count));
     let mut finalists = Vec::new();
     {
-        let mut good_tally = semifinalists.clone();
-        let matching_bottom = good_tally
+        let mut bad_tally = semifinalists.clone();
+        let matching_bottom = bad_tally
             .iter()
-            .filter(|i| i.bad_count == good_tally[0].bad_count)
+            .filter(|i| i.bad_count == bad_tally[0].bad_count)
             .collect::<Vec<_>>();
 
         let to_remove = break_finalist_tie(&mut rng, &matching_bottom);
-        good_tally.remove(
-            good_tally
+        bad_tally.remove(
+            bad_tally
                 .iter()
                 .position(|i| i.option_index == to_remove.option_index)
                 .unwrap(),
         );
-        finalists.push(good_tally[0]);
-        finalists.push(good_tally[1]);
+        finalists.push(bad_tally[0]);
+        finalists.push(bad_tally[1]);
     }
 
     points_tally.sort_by(|a, b| a.score.cmp(&b.score).reverse());

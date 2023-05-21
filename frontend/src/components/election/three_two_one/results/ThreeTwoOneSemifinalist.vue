@@ -17,12 +17,12 @@ defineProps({
             <tr>
                 <th>Name</th>
                 <th>Finalist</th>
-                <th>Good😊</th>
+                <th>😞Bad</th>
             </tr>
             <tr v-for="option_index in result.semifinalists">
                 <td>{{ result.options[option_index] }}</td>
                 <td>{{ result.finalists.includes(option_index) ? "✅" : "❌" }}</td>
-                <td>{{ result.points_tally.find((j) => j.option_index == option_index)?.good_count }}</td>
+                <td>{{ result.points_tally.find((j) => j.option_index == option_index)?.bad_count }}</td>
             </tr>
         </table>
     </div>
