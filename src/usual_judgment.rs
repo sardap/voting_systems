@@ -1,6 +1,7 @@
 use core::panic;
 
-use diesel::{ExpressionMethods, OptionalExtension, QueryDsl, RunQueryDsl};
+use diesel::{result, ExpressionMethods, OptionalExtension, QueryDsl, RunQueryDsl};
+use log::info;
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator; // 0.17.1
 use strum_macros::EnumIter; // 0.17.1
@@ -197,20 +198,16 @@ pub struct UsualJudgmentTally {
 
 impl UsualJudgmentTally {
     fn majority_grade(&self) -> Grade {
-        //TODO change this to use math not memory
-        let mut big_vec = self
-            .ratings
-            .iter()
-            .enumerate()
-            .map(|(k, v)| {
-                let rating: Grade = k.into();
-                vec![rating; *v as usize]
-            })
-            .flatten()
-            .collect::<Vec<_>>();
-        big_vec.sort_by(|a, b| a.cmp(b));
+        let vote_count = self.ratings.iter().sum::<i64>() as f64;
+        let mut sum = 0.0;
+        for (i, rating) in self.ratings.iter().enumerate() {
+            sum += (*rating as f64) / vote_count;
+            if sum >= 0.5 {
+                return i.into();
+            }
+        }
 
-        big_vec[big_vec.len() / 2]
+        panic!("Impossible");
     }
 
     fn percent_for_grade(&self, grade: Grade) -> f64 {
@@ -243,15 +240,20 @@ impl UsualJudgmentTally {
 
     fn score_n(&self, n: f64) -> f64 {
         let majority_grade = self.majority_grade();
-        let a: f64 = self.percent_for_grade(majority_grade);
+        let a: f64 = majority_grade.into();
         let p: f64 = self.get_percent_above_grade(majority_grade).powf(n);
         let q: f64 = self.get_percent_below_grade(majority_grade).powf(n);
 
-        a + ((1.0 / 2.0) * ((p - q) / (1.0 - p - q)))
-    }
+        let p_minus_q = p - q;
 
-    fn score(&self) -> f64 {
-        self.score_n(1.0)
+        let n_a = a + 0.5 * (p_minus_q / (1.0 - p_minus_q));
+        let deviation = if n_a < a { -(a - n_a) } else { (a - n_a) };
+
+        info!(
+            "a:{} p:{} q:{} p-q:{} n_a:{} deviation:{}",
+            a, p, q, p_minus_q, n_a, deviation
+        );
+        deviation
     }
 }
 
@@ -273,6 +275,23 @@ fn options_majority_grade(tally: &[UsualJudgmentTally], majority_grade: Grade) -
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct UsualJudgmentTallyCalculated {
+    pub option_index: usize,
+    pub ratings: [i64; 7],
+    pub average_grade: Grade,
+}
+
+impl From<UsualJudgmentTally> for UsualJudgmentTallyCalculated {
+    fn from(tally: UsualJudgmentTally) -> Self {
+        Self {
+            option_index: tally.option_index,
+            ratings: tally.ratings,
+            average_grade: tally.majority_grade(),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Score {
     option_index: usize,
     score: f64,
@@ -285,38 +304,16 @@ pub struct BreakTie {
 }
 
 fn break_tie(options: &[UsualJudgmentTally]) -> BreakTie {
-    let scores: Vec<Score> = options
-        .iter()
-        .map(|i| Score {
-            option_index: i.option_index,
-            score: i.score(),
-        })
-        .collect::<Vec<_>>();
-    let best_score = scores
-        .iter()
-        .map(|i| i.score)
-        .max_by(|a, b| a.partial_cmp(b).unwrap())
-        .unwrap();
-    let matching_best_score = scores
-        .iter()
-        .filter(|i| i.score == best_score)
-        .map(|i| i.option_index)
-        .collect::<Vec<_>>();
-
-    if matching_best_score.len() == 1 {
-        return BreakTie {
-            scores,
-            winner: matching_best_score[0],
-        };
-    }
-
     // Additional tie-breaking
     for level in 1..100 {
         let next_scores: Vec<Score> = options
             .iter()
-            .map(|i| Score {
-                option_index: i.option_index,
-                score: i.score_n(level as f64),
+            .map(|i| {
+                info!("Getting score for {:?}", i.option_index);
+                Score {
+                    option_index: i.option_index,
+                    score: i.score_n(level as f64),
+                }
             })
             .collect::<Vec<_>>();
         let best_next_score = next_scores
@@ -332,23 +329,20 @@ fn break_tie(options: &[UsualJudgmentTally]) -> BreakTie {
 
         if matching_next_best_score.len() == 1 {
             return BreakTie {
-                scores,
+                scores: next_scores,
                 winner: matching_next_best_score[0],
             };
         }
     }
 
     // I really don't understand the tie breaker tie breaker
-    BreakTie {
-        scores,
-        winner: matching_best_score[0],
-    }
+    panic!("Tie breaker tie breaker not implemented");
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UsualJudgmentResult {
     pub options: Vec<String>,
-    pub starting_tally: Vec<UsualJudgmentTally>,
+    pub starting_tally: Vec<UsualJudgmentTallyCalculated>,
     pub best_grade: Grade,
     pub tie_info: Option<BreakTie>,
     pub winner: usize,
@@ -390,7 +384,7 @@ pub fn get_result(
 
     UsualJudgmentResult {
         options: election.options.clone(),
-        starting_tally: tally,
+        starting_tally: tally.into_iter().map(|i| i.into()).collect(),
         best_grade,
         tie_info,
         winner,

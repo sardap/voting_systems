@@ -493,7 +493,7 @@ export interface ThreeTwoOneResult {
     finalists: number[];
     winner: number;
     vote_count: number;
-    votes: ThreeTwoOneVote[];
+    vote_tally: RankedChoiceVoteTally[];
 }
 
 export async function get_three_two_one_result(api_key: string, election_id: string): Promise<ThreeTwoOneResult> {
@@ -664,6 +664,7 @@ export function ujgrade_to_number(grade: UJGrade): number {
 export interface UsualJudgmentTally {
     option_index: number;
     ratings: number[];
+    average_grade: string;
 }
 
 export interface Score {

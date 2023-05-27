@@ -64,23 +64,22 @@ pub struct PublicElection {
     pub require_token: bool,
 }
 
-pub trait RankedChoiceVote {
-    fn ranked_votes(&self) -> Vec<usize>;
+pub trait RankedChoiceVote<T> {
+    fn ranked_votes(&self) -> Vec<T>;
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub struct RankedChoiceVoteTally {
-    pub votes: Vec<usize>,
+pub struct RankedChoiceVoteTally<T> {
+    pub votes: Vec<T>,
     pub count: usize,
 }
 
-impl Eq for RankedChoiceVoteTally {}
-
-pub fn tally_ranked_votes<T>(votes: &[T]) -> Vec<RankedChoiceVoteTally>
+pub fn tally_ranked_votes<T, J>(votes: &[T]) -> Vec<RankedChoiceVoteTally<J>>
 where
-    T: RankedChoiceVote,
+    T: RankedChoiceVote<J>,
+    J: Eq + std::hash::Hash + Clone,
 {
-    let mut map: HashMap<Vec<usize>, usize> = HashMap::new();
+    let mut map: HashMap<Vec<J>, usize> = HashMap::new();
 
     for vote in votes {
         let individual_votes = vote.ranked_votes();
@@ -91,7 +90,7 @@ where
         *map.get_mut(&individual_votes).unwrap() += 1;
     }
 
-    let mut result: Vec<RankedChoiceVoteTally> = map
+    let mut result: Vec<RankedChoiceVoteTally<J>> = map
         .into_iter()
         .map(|(votes, count)| RankedChoiceVoteTally { votes, count })
         .collect();

@@ -98,7 +98,7 @@ pub struct StvVote {
     pub votes: Vec<usize>,
 }
 
-impl RankedChoiceVote for StvVote {
+impl RankedChoiceVote<usize> for StvVote {
     fn ranked_votes(&self) -> Vec<usize> {
         self.votes.clone()
     }
@@ -150,7 +150,7 @@ pub struct StvRound {
 pub struct StvResult {
     pub candidates: Vec<String>,
     pub elected_candidates: Vec<usize>,
-    pub votes: Vec<RankedChoiceVoteTally>,
+    pub votes: Vec<RankedChoiceVoteTally<usize>>,
     pub rounds: Vec<StvRound>,
     pub vote_count: usize,
 }

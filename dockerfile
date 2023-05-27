@@ -39,7 +39,7 @@ RUN useradd -ms /bin/bash mr_vote
 RUN mkdir /app
 WORKDIR /app
 
-COPY --from=backend_builder /app/target/release /app/release
+COPY --from=backend_builder /app/target/release/backend /app/release/backend
 COPY --from=frontend_builder /app/dist /app/frontend
 
 RUN chown -R mr_vote /app

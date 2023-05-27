@@ -6,7 +6,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     create_add_election, create_add_vote, create_election, create_get_election, create_get_votes,
-    elections::{self, CreateElection, CreateElectionResult},
+    elections::{
+        self, tally_ranked_votes, CreateElection, CreateElectionResult, RankedChoiceVote,
+        RankedChoiceVoteTally,
+    },
     models,
 };
 
@@ -26,12 +29,14 @@ create_add_election!(
     crate::schema::three_two_one_elections
 );
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Hash)]
 pub enum GoodOkBad {
     Good,
     Ok,
     Bad,
 }
+
+impl Eq for GoodOkBad {}
 
 impl Into<i32> for GoodOkBad {
     fn into(self) -> i32 {
@@ -95,6 +100,18 @@ impl From<crate::models::ThreeTwoOneVote> for ThreeTwoOneVote {
     }
 }
 
+impl RankedChoiceVote<usize> for ThreeTwoOneVote {
+    fn ranked_votes(&self) -> Vec<usize> {
+        self.votes
+            .iter()
+            .map(|i| {
+                let x: usize = (*i).into();
+                x
+            })
+            .collect()
+    }
+}
+
 create_get_votes!(
     crate::schema::three_two_one_votes,
     models::ThreeTwoOneVote,
@@ -124,7 +141,7 @@ pub struct ThreeTwoOneResult {
     pub finalists: Vec<usize>,
     pub winner: usize,
     pub vote_count: usize,
-    pub votes: Vec<ThreeTwoOneVote>,
+    pub vote_tally: Vec<RankedChoiceVoteTally<usize>>,
 }
 
 fn break_semifinalist_tie(
@@ -244,12 +261,12 @@ pub fn get_result(election: &ThreeTwoOneElection, votes: &[ThreeTwoOneVote]) -> 
     let winner = if a_count > b_count { a_index } else { b_index };
 
     ThreeTwoOneResult {
+        vote_tally: tally_ranked_votes(votes),
         options: election.options.clone(),
         semifinalists: semifinalists.iter().map(|i| i.option_index).collect(),
         finalists: finalists.iter().map(|i| i.option_index).collect(),
         points_tally,
         winner,
         vote_count: votes.len(),
-        votes: votes.clone().to_vec(),
     }
 }

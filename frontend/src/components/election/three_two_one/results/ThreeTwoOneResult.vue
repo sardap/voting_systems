@@ -4,6 +4,7 @@ import { ref, type PropType } from 'vue';
 import ThreeTwoOnePoints from './ThreeTwoOnePoints.vue';
 import ThreeTwoOneSemifinalist from './ThreeTwoOneSemifinalist.vue'
 import ThreeTwoOneFinalist from './ThreeTwoOneFinalist.vue';
+import ThreeTwoOneVoteTally from './ThreeTwoOneVoteTally.vue';
 
 const props = defineProps({
   election: {
@@ -27,6 +28,8 @@ const result = ref(props.result as ThreeTwoOneResult);
   <ThreeTwoOneSemifinalist :result="result" />
   <h2>Finalist</h2>
   <ThreeTwoOneFinalist :result="result" />
+  <h2>Votes</h2>
+  <ThreeTwoOneVoteTally :result="result" />
 </template>
 
 <style scoped></style>

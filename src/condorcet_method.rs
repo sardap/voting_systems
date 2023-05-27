@@ -39,7 +39,7 @@ pub struct CondorcetMethodVote {
     pub votes: Vec<usize>,
 }
 
-impl RankedChoiceVote for CondorcetMethodVote {
+impl RankedChoiceVote<usize> for CondorcetMethodVote {
     fn ranked_votes(&self) -> Vec<usize> {
         self.votes.clone()
     }
@@ -100,7 +100,7 @@ pub struct CondorcetMethodResult {
     pub locked_in_pairwise_victories: Option<Vec<Vec<usize>>>,
     pub matched_pair_winner: Option<usize>,
     pub last_resort_winner: Option<usize>,
-    pub votes: Vec<RankedChoiceVoteTally>,
+    pub votes: Vec<RankedChoiceVoteTally<usize>>,
     pub vote_count: usize,
 }
 

@@ -13,7 +13,7 @@ const props = defineProps({
         required: true,
     },
     tally: {
-        type: Object as PropType<{ option_index: number, ratings: number[] }[]>,
+        type: Object as PropType<{ option_index: number, ratings: number[], average_grade: string, }[]>,
         required: true,
     },
     vote_count: {
@@ -22,7 +22,7 @@ const props = defineProps({
     }
 });
 
-const ratings = [UJGrade.Bad, UJGrade.Inadequate, UJGrade.Fair, UJGrade.Good, UJGrade.VeryGood, UJGrade.Excellent];
+const ratings = [UJGrade.Bad, UJGrade.Inadequate, UJGrade.Passable, UJGrade.Fair, UJGrade.Good, UJGrade.VeryGood, UJGrade.Excellent];
 const filtered_tally = ref(props.tally.filter((x) => props.options.map((i) => i.option_index).includes(x.option_index)));
 
 function get_class(rating: UJGrade) {
@@ -61,6 +61,25 @@ function get_rating_color(rating: UJGrade) {
     }
 }
 
+function get_rating_text_color(rating: string) {
+    switch (rating) {
+        case "Bad":
+            return '#b30000'; // Slightly lighter red
+        case "Inadequate":
+            return '#cc5500'; // Darker version of orange-red
+        case "Passable":
+            return '#cc8500'; // Darker version of gold-orange
+        case "Fair":
+            return '#ccad00'; // Darker version of gold
+        case "Good":
+            return '#7fbf32'; // More vibrant green
+        case "Very Good":
+            return '#007000'; // Darker shade of green
+        case "Excellent":
+            return '#005500'; // Even darker shade of green
+    }
+}
+
 function make_dataset(rating: UJGrade) {
     const dataset = [];
     for (let i = 0; i < props.options.length; i++) {
@@ -87,18 +106,6 @@ const chart_options = ref({
     }
 });
 
-function find_median_category(category_sums: number[]): UJGrade {
-    const expanded_list = [];
-    for (const [index, value] of category_sums.entries()) {
-        for (let i = 0; i < value; i++) {
-            expanded_list.push(index);
-        }
-    }
-    expanded_list.sort((a, b) => a - b);
-
-    return expanded_list[Math.floor(expanded_list.length / 2)];
-}
-
 </script>
 
 <template>
@@ -108,13 +115,14 @@ function find_median_category(category_sums: number[]): UJGrade {
             <tr>
                 <th>Name</th>
                 <th v-for="rating in ratings">{{ ujgrade_to_string(rating) }}</th>
-                <th>Median</th>
+                <th>Average</th>
             </tr>
             <tr v-for="entry in filtered_tally">
                 <td>{{ options.find((i) => i.option_index == entry.option_index)?.name }}</td>
-                <td v-for="rating in ratings" :class="get_class(rating)">{{ entry.ratings[rating] }}</td>
-                <td :style="`color: ` + get_rating_color(find_median_category(entry.ratings)) + `;`">{{
-                    ujgrade_to_string(find_median_category(entry.ratings)) }}
+                <td v-for="rating in ratings" :class="get_class(rating)">{{ (entry.ratings[rating] / vote_count) * 100 }}%
+                </td>
+                <td :style="`color: ` + get_rating_text_color(entry.average_grade) + `;`">{{
+                    entry.average_grade }}
                 </td>
             </tr>
         </table>

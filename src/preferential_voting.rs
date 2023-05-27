@@ -63,7 +63,7 @@ impl PreferentialVote {
     }
 }
 
-impl RankedChoiceVote for PreferentialVote {
+impl RankedChoiceVote<usize> for PreferentialVote {
     fn ranked_votes(&self) -> Vec<usize> {
         self.votes.clone()
     }
@@ -107,7 +107,7 @@ pub struct ElectionWinner {
     pub candidates: Vec<String>,
     pub log: Vec<LogEntry>,
     pub winner: usize,
-    pub votes: Vec<RankedChoiceVoteTally>,
+    pub votes: Vec<RankedChoiceVoteTally<usize>>,
     pub vote_count: usize,
 }
 
