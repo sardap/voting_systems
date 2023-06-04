@@ -63,9 +63,16 @@ async function submit() {
     <div v-if="loading">
       <p>Loading...</p>
     </div>
+    <p>SELECT WHAT YOU HATE MOST</p>
     <CheckboxChoice v-model="options" :single_option="true" />
     <button class="vote-button" @click="submit">🗳️VOTE🗳️</button>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+p {
+  color: red;
+  font-weight: bold;
+  font-size: xx-large;
+}
+</style>
