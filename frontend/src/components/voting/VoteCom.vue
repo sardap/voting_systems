@@ -101,7 +101,7 @@ const show_info = ref(false);
 
 <template>
     <div>
-        <div v-if="complete">
+        <div v-if="complete" class="thank-you">
             <p>{{ random_thank_you() }}</p>
         </div>
         <div v-else-if="election">
@@ -157,4 +157,17 @@ const show_info = ref(false);
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.thank-you p {
+    font-size: 5.0em;
+    margin: 1em;
+}
+
+.thank-you {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+}
+</style>
