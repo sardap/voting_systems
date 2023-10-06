@@ -157,8 +157,8 @@ fn get_preference_tally(candidate_count: usize, votes: &[PreferentialVote]) -> V
     }
 
     for vote in votes {
-        for (pref_number, vote) in vote.votes.iter().enumerate() {
-            preference_tally[*vote][pref_number] += 1;
+        for (vote, pref_number) in vote.votes.iter().enumerate() {
+            preference_tally[vote][*pref_number] += 1;
         }
     }
 
@@ -173,8 +173,8 @@ pub fn get_election_winner(
 
     let preference_tally = get_preference_tally(election.options.len(), votes);
 
-    let mut votes = votes.to_vec();
-    votes.shuffle(&mut rng);
+    let votes = votes.to_vec();
+    // votes.shuffle(&mut rng);
 
     let candidates = election.options.clone();
     let target_count = votes.len() / 2;
@@ -188,9 +188,18 @@ pub fn get_election_winner(
         vote_counts.push(vec![0; candidates.len()]);
         let vote_count = vote_counts.last_mut().unwrap();
         for vote in &votes {
-            for option in &vote.votes {
-                if !eliminated_candidates.contains(option) {
-                    vote_count[*option] += 1;
+            let mut votes: Vec<_> = vote
+                .votes
+                .iter()
+                .enumerate()
+                .map(|(x, y)| (x, *y))
+                .collect();
+
+            votes.sort_by_key(|(_, pref)| *pref);
+
+            for option in votes {
+                if !eliminated_candidates.contains(&option.0) {
+                    vote_count[option.0] += 1;
                     break;
                 }
             }

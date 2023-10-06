@@ -26,12 +26,12 @@ const result = ref(props.result as PrefElectionResult)
     <h2>Elimination Table</h2>
     <EliminationTable :election_result="result" />
     <br />
-    <h2>Preference Tally</h2>
+    <!-- <h2>Preference Tally</h2>
     <PreferenceTally :election_result="result" />
     <br />
     <h2>Preference Flow</h2>
     <PreferenceFlow :election_result="result" />
-    <br />
+    <br /> -->
     <h2>Vote Table</h2>
     <VotesTable :options="result.candidates" :votes="result.votes" />
   </div>

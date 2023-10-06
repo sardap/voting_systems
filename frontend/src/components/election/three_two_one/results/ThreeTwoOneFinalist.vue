@@ -14,7 +14,7 @@ function get_vote_count(option_index: number, other_option_index: number): numbe
     for (const vote of props.result.vote_tally) {
         const a = vote.votes[option_index];
         const b = vote.votes[other_option_index];
-        if (a > b) {
+        if (a < b) {
             count += vote.count;
         }
     }
