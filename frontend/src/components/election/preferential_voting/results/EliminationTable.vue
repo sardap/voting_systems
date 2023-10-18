@@ -64,7 +64,7 @@ onMounted(async () => {
 });
 
 function get_vote_percent(vote_count: number) {
-    return ((vote_count / props.election_result.votes.length) * 100).toFixed(2);
+    return ((vote_count / props.election_result.vote_count) * 100).toFixed(2);
 }
 
 
