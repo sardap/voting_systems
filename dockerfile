@@ -16,7 +16,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y pkg-config libssl-dev libpq-dev
 
 RUN rustup update
-RUN rustup default nightly
+RUN rustup default nightly-2022-07-24
 
 RUN mkdir app
 WORKDIR /app
