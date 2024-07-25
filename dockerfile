@@ -9,14 +9,14 @@ COPY ./frontend .
 RUN npm run build
 
 # Backend Build
-FROM rust:1.65.0-buster as backend_builder
+FROM rust:1.67.0-buster as backend_builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y pkg-config libssl-dev libpq-dev
 
 RUN rustup update
-RUN rustup default nightly-2022-07-24
+# RUN rustup default nighly-2022-07-24
 
 RUN mkdir app
 WORKDIR /app
