@@ -1,0 +1,16 @@
+[package]
+name = "voting-systems"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+regex = "1.10.6"
+serde = "1.0.207"
+serde_derive = "1.0.207"
+uuid = { version = "1.10.0", features = ["v4", "serde"] }
+
+
+[features]
+default = ["quota_preferential_vic_labor_2024", "single_non_transferable_vote"]
+quota_preferential_vic_labor_2024 = []
+single_non_transferable_vote = []

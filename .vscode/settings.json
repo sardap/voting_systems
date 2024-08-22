@@ -9,5 +9,6 @@
         "SNTV",
         "Unforintalty"
     ],
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "rust-analyzer.testExplorer": true,
 }

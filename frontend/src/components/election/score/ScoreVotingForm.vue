@@ -1,60 +1,65 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
-import { from_mj_rating_to_string, ElectionType, submit_generic_vote, type GenericElection, MJRating, from_mj_rating_to_int, type ScoreElection } from '@/backend';
-import type { VoteOption } from '@/utils';
+import { ref, type PropType } from 'vue'
+import { ElectionType, submit_generic_vote, type ScoreElection } from '@/backend'
+import type { VoteOption } from '@/utils'
 
 const props = defineProps({
   election: {
     type: Object as PropType<ScoreElection>,
-    required: true,
+    required: true
   },
   options: {
     type: Array as PropType<VoteOption[]>,
-    required: true,
+    required: true
   },
   vote_token: {
     type: String,
-    required: false,
+    required: false
   }
-});
+})
 
 const emits = defineEmits({
   complete: () => true,
-  error: (error: string) => true,
-});
+  error: (error: string) => true
+})
 
-const loading = ref<boolean>(false);
-const options = ref(props.options.map((option) => {
-  return {
-    ...option,
-    points: 0,
-  };
-}));
-
+const loading = ref<boolean>(false)
+const options = ref(
+  props.options.map((option) => {
+    return {
+      ...option,
+      points: 0
+    }
+  })
+)
 
 async function submit() {
-  const candidates = props.election.options;
+  const candidates = props.election.options
 
-  const vote: number[] = [];
+  const vote: number[] = []
   for (let option_index = 0; option_index < candidates.length; option_index++) {
-    const points = options.value.find(option => option.index == option_index)?.points as number;
-    vote.push(points);
+    const points = options.value.find((option) => option.index == option_index)?.points as number
+    vote.push(points)
   }
 
-  loading.value = true;
+  loading.value = true
 
-  const response = await submit_generic_vote(ElectionType.Score, props.election.id, props.vote_token, vote);
-  const data = await response.text();
-  loading.value = false;
+  const response = await submit_generic_vote(
+    ElectionType.Score,
+    props.election.id,
+    props.vote_token,
+    vote
+  )
+  const data = await response.text()
+  loading.value = false
   if (!response.ok) {
-    emits(`error`, data);
-    console.log(`ERROR: ${data}`);
-    return;
+    emits(`error`, data)
+    console.log(`ERROR: ${data}`)
+    return
   }
 
-  emits(`complete`);
+  emits(`complete`)
 }
-
 </script>
 
 <template>
@@ -77,8 +82,14 @@ async function submit() {
             <p>{{ option.name }}</p>
           </div>
           <div class="col">
-            <button v-for="score in election.max_score" @click="options[i].points = (score - 1)"
-              :class="`circle-button ` + (options[i].points == (score - 1) ? `selected` : ``)">{{ score - 1 }}</button>
+            <button
+              v-for="(score, j) in election.max_score"
+              :key="j"
+              @click="options[i].points = score - 1"
+              :class="`circle-button ` + (options[i].points == score - 1 ? `selected` : ``)"
+            >
+              {{ score - 1 }}
+            </button>
           </div>
         </div>
       </div>
@@ -111,8 +122,7 @@ async function submit() {
 }
 
 .circle-button.selected {
-  background-color: #F44336;
+  background-color: #f44336;
   color: #ffffff;
-
 }
 </style>

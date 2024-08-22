@@ -1,5 +1,5 @@
 # React frotnend
-FROM node:18.7.0 as frontend_builder
+FROM node:18.7.0 AS frontend_builder
 WORKDIR /app
 # Seprated for caching
 COPY ./frontend/package.json .
@@ -9,21 +9,22 @@ COPY ./frontend .
 RUN npm run build
 
 # Backend Build
-FROM rust:1.67.0-buster as backend_builder
+FROM rust:1.67.0-buster AS backend_builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y pkg-config libssl-dev libpq-dev
 
 RUN rustup update
-# RUN rustup default nighly-2022-07-24
 
 RUN mkdir app
 WORKDIR /app
 
-COPY ./Cargo.lock Cargo.lock
-COPY ./Cargo.toml Cargo.toml
-COPY ./src src
+COPY ./backend ./backend
+COPY ./systems ./systems
+COPY ./Cargo.toml .
+COPY ./Cargo.lock .
+COPY rust-toolchain .
 
 RUN cargo build --release
 
@@ -39,7 +40,7 @@ RUN useradd -ms /bin/bash mr_vote
 RUN mkdir /app
 WORKDIR /app
 
-COPY --from=backend_builder /app/target/release/backend /app/release/backend
+COPY --from=backend_builder /app/target/release/voting-systems-site-backend /app/release/backend
 COPY --from=frontend_builder /app/dist /app/frontend
 
 RUN chown -R mr_vote /app

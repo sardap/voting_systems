@@ -19,6 +19,10 @@ module.exports = {
       ]
     }
   ],
+  rules: {
+    "vue/no-mutating-props": "off", 
+    "vue/valid-v-model": "off",
+  },
   parserOptions: {
     ecmaVersion: 'latest'
   }

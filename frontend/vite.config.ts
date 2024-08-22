@@ -10,5 +10,16 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('components/election/')) {
+            return id.split('components/election/')[1].split('/')[0]
+          }
+        }
+      }
+    }
   }
 })

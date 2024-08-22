@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import type { GenericElection, ScoreResult, GenericElectionResult } from '@/backend';
-import { ref, type PropType } from 'vue';
-import ScoreCount from '@/components/results/ScoreCount.vue';
+import type { GenericElection, ScoreResult, GenericElectionResult } from '@/backend'
+import { ref, type PropType } from 'vue'
+import ScoreCount from '@/components/results/ScoreCount.vue'
 
 const props = defineProps({
   election: {
     type: Object as PropType<GenericElection>,
-    required: true,
+    required: true
   },
   result: {
     type: Object as PropType<GenericElectionResult>,
-    required: true,
+    required: true
   }
-});
+})
 
-const result = ref(props.result as ScoreResult);
+const result = ref(props.result as ScoreResult)
 </script>
 
 <template>

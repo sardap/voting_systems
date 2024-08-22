@@ -1,0 +1,3 @@
+DROP TABLE quota_preferential_vic_labor_2024_transferable_votes;
+DROP TABLE quota_preferential_vic_labor_2024_candidate;
+DROP TABLE quota_preferential_vic_labor_2024_elections;

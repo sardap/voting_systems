@@ -1,51 +1,54 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
-import { type GenericElection, submit_generic_vote, ElectionType } from '@/backend';
-import type { VoteOption } from '@/utils';
-import RankedChoice from '@/components/voting/RankedChoice.vue';
+import { ref, type PropType } from 'vue'
+import { type GenericElection, submit_generic_vote, ElectionType } from '@/backend'
+import type { VoteOption } from '@/utils'
+import RankedChoice from '@/components/voting/RankedChoice.vue'
 
 const props = defineProps({
   election: {
     type: Object as PropType<GenericElection>,
-    required: true,
+    required: true
   },
   options: {
     type: Array as PropType<VoteOption[]>,
-    required: true,
+    required: true
   },
   vote_token: {
     type: String,
-    required: false,
+    required: false
   }
-});
+})
 
 const emits = defineEmits({
   complete: () => true,
-  error: (error: string) => true,
-});
+  error: (error: string) => true
+})
 
-
-const loading = ref<boolean>(false);
-const options = ref<VoteOption[]>(props.options);
+const loading = ref<boolean>(false)
+const options = ref<VoteOption[]>(props.options)
 
 async function submit() {
-  const votes: number[] = [];
+  const votes: number[] = []
   for (let i = 0; i < options.value.length; i++) {
-    votes.push(options.value.findIndex((option) => option.index === i));
+    votes.push(options.value.findIndex((option) => option.index === i))
   }
 
-  loading.value = true;
-  console.log(`Votes: ${JSON.stringify(votes)}`);
-  const response = await submit_generic_vote(ElectionType.CondorcetMethod, props.election.id, props.vote_token, votes);
-  const data = await response.text();
-  loading.value = false;
+  loading.value = true
+  console.log(`Votes: ${JSON.stringify(votes)}`)
+  const response = await submit_generic_vote(
+    ElectionType.CondorcetMethod,
+    props.election.id,
+    props.vote_token,
+    votes
+  )
+  const data = await response.text()
+  loading.value = false
   if (!response.ok) {
-    emits(`error`, data);
-    return;
+    emits(`error`, data)
+    return
   }
-  emits(`complete`);
+  emits(`complete`)
 }
-
 </script>
 
 <template>

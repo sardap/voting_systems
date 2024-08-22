@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import type { PropType } from 'vue';
+import type { PropType } from 'vue'
 
 defineProps({
   options: {
     required: true,
-    type: Array as PropType<string[]>,
+    type: Array as PropType<string[]>
   },
   counts: {
     required: true,
-    type: Object as PropType<{ option_index: number, vote_count: number }[]>,
+    type: Object as PropType<{ option_index: number; vote_count: number }[]>
   },
   winner: {
     required: false,
-    type: Number,
+    type: Number
   }
-});
-
+})
 </script>
 
 <template>
@@ -24,7 +23,7 @@ defineProps({
       <th>Name</th>
       <th>Points</th>
     </tr>
-    <tr v-for="count in counts">
+    <tr v-for="count in counts" :key="count.option_index">
       <th>{{ options[count.option_index] }}{{ count.option_index == winner ? `🥇` : `` }}</th>
       <td>{{ count.vote_count }}</td>
     </tr>

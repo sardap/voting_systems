@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import VoteCom from '@/components/voting/VoteCom.vue';
-import type { ElectionType } from '@/backend';
-import type { PropType } from 'vue';
+import { useRoute } from 'vue-router'
+import VoteCom from '@/components/voting/VoteCom.vue'
+import type { ElectionType } from '@/backend'
+import type { PropType } from 'vue'
 
 defineProps({
   election_type: {
     type: Object as PropType<ElectionType>,
-    required: true,
+    required: true
   }
-});
+})
 
-const route = useRoute();
-const election_id = route.params.id as string;
-const vote_token = route.query.vote_token as string;
-
+const route = useRoute()
+const election_id = route.params.id as string
+const vote_token = route.query.vote_token as string
 </script>
 
 <template>

@@ -13,7 +13,7 @@
 
 :root {
   /* Define your color variables for the light theme here */
-  --background-color: #C2E0F4;
+  --background-color: #c2e0f4;
   --text-color: #000000;
   /* Add more custom colors as needed */
 }
@@ -22,7 +22,6 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
 }
-
 
 table {
   border-collapse: collapse;
@@ -45,34 +44,33 @@ table tr th {
 }
 
 table tr:hover {
-  background-color: #E8AB8C;
+  background-color: #e8ab8c;
 }
 
 table tr:nth-child(2n):hover {
-  background-color: #E8AB8C;
+  background-color: #e8ab8c;
 }
 
-
 table tr:nth-child(2n) {
-  background-color: #FAD8C0;
+  background-color: #fad8c0;
 }
 
 table tr {
-  background-color: #FDE5D0;
+  background-color: #fde5d0;
 }
 
 table th {
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: center;
-  background-color: #A88DC3;
+  background-color: #a88dc3;
   /* Match the table header background color with the root background color */
   color: black;
   /* Update text color to black */
 }
 
 .first-col {
-  background-color: #A88DC3;
+  background-color: #a88dc3;
 }
 
 .error-text {
@@ -90,6 +88,12 @@ table th {
 
 .warning {
   color: black;
+  font-size: large;
+  font-weight: 600;
+}
+
+.error {
+  color: red;
   font-size: large;
   font-weight: 600;
 }

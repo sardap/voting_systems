@@ -1,44 +1,44 @@
 div.row:hover {
-    background-color: #E8AB8C;
+  background-color: #e8ab8c;
 }
 
 div.row:nth-child(2n):hover {
-    background-color: #E8AB8C;
+  background-color: #e8ab8c;
 }
 
 div.row:nth-child(2n) {
-    background-color: #FAD8C0;
+  background-color: #fad8c0;
 }
 
 div.row {
-    background-color: #FDE5D0;
+  background-color: #fde5d0;
 }
 
 div.row.header {
-    background-color: #A2F4B9;
+  background-color: #a2f4b9;
 }
 
 div.table {
-    display: table;
-    max-width: 1073px;
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+  display: table;
+  max-width: 1073px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 div.row {
-    display: table-row;
+  display: table-row;
 }
 
 div.col {
-    display: table-cell;
-    border: 1px solid black;
-    padding: 8px;
-    text-align: left;
-    vertical-align: top;
+  display: table-cell;
+  border: 1px solid black;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
 }
 
 div.col.rank {
-    width: 10px;
-    text-align: center;
+  width: 10px;
+  text-align: center;
 }

@@ -1,25 +1,24 @@
 <script setup lang="ts">
-import type { GenericElection, CumulativeResult, GenericElectionResult } from '@/backend';
-import { ref, type PropType } from 'vue';
-import CumulativeTable from './CumulativeTable.vue';
+import type { GenericElection, CumulativeResult, GenericElectionResult } from '@/backend'
+import { ref, type PropType } from 'vue'
+import CumulativeTable from './CumulativeTable.vue'
 
 const props = defineProps({
   election: {
     type: Object as PropType<GenericElection>,
-    required: true,
+    required: true
   },
   result: {
     type: Object as PropType<GenericElectionResult>,
-    required: true,
+    required: true
   }
-});
+})
 
 const result = ref(props.result as CumulativeResult)
 
 function score_sum() {
-  return result.value?.votes_tally.reduce((a, b) => a + b.vote_count, 0);
+  return result.value?.votes_tally.reduce((a, b) => a + b.vote_count, 0)
 }
-
 </script>
 
 <template>

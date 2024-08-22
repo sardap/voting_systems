@@ -1,88 +1,110 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
-import { from_mj_rating_to_string, ElectionType, submit_generic_vote, type GenericElection, MJRating, from_mj_rating_to_int, ujgrade_to_string, ujgrade_to_number, UJGrade } from '@/backend';
-import type { VoteOption } from '@/utils';
+import { ref, type PropType } from 'vue'
+import {
+  ElectionType,
+  submit_generic_vote,
+  type GenericElection,
+  ujgrade_to_string,
+  ujgrade_to_number,
+  UJGrade
+} from '@/backend'
+import type { VoteOption } from '@/utils'
 
 const props = defineProps({
   election: {
     type: Object as PropType<GenericElection>,
-    required: true,
+    required: true
   },
   options: {
     type: Array as PropType<VoteOption[]>,
-    required: true,
+    required: true
   },
   vote_token: {
     type: String,
-    required: false,
+    required: false
   }
-});
+})
 
 const emits = defineEmits({
   complete: () => true,
-  error: (error: string) => true,
-});
+  error: (error: string) => true
+})
 
-const loading = ref<boolean>(false);
-const options = ref(props.options.map((option) => {
-  return {
-    ...option,
-    grade: UJGrade.Bad,
-  };
-}));
-const grades: UJGrade[] = [UJGrade.Bad, UJGrade.Inadequate, UJGrade.Passable, UJGrade.Fair, UJGrade.Good, UJGrade.VeryGood, UJGrade.Excellent];
-
+const loading = ref<boolean>(false)
+const options = ref(
+  props.options.map((option) => {
+    return {
+      ...option,
+      grade: UJGrade.Bad
+    }
+  })
+)
+const grades: UJGrade[] = [
+  UJGrade.Bad,
+  UJGrade.Inadequate,
+  UJGrade.Passable,
+  UJGrade.Fair,
+  UJGrade.Good,
+  UJGrade.VeryGood,
+  UJGrade.Excellent
+]
 
 async function submit() {
-  const candidates = props.election.options;
+  const candidates = props.election.options
 
-  const vote: number[] = [];
+  const vote: number[] = []
   for (let option_index = 0; option_index < candidates.length; option_index++) {
-    const points = ujgrade_to_number(options.value.find(option => option.index == option_index)?.grade as UJGrade);
-    vote.push(points);
+    const points = ujgrade_to_number(
+      options.value.find((option) => option.index == option_index)?.grade as UJGrade
+    )
+    vote.push(points)
   }
 
-  loading.value = true;
+  loading.value = true
 
-  const response = await submit_generic_vote(ElectionType.UsualJudgment, props.election.id, props.vote_token, vote);
-  const data = await response.text();
-  loading.value = false;
+  const response = await submit_generic_vote(
+    ElectionType.UsualJudgment,
+    props.election.id,
+    props.vote_token,
+    vote
+  )
+  const data = await response.text()
+  loading.value = false
   if (!response.ok) {
-    emits(`error`, data);
-    console.log(`ERROR: ${data}`);
-    return;
+    emits(`error`, data)
+    console.log(`ERROR: ${data}`)
+    return
   }
 
-  emits(`complete`);
+  emits(`complete`)
 }
 
 function change_rating(i: number, grade: UJGrade) {
-  options.value[i].grade = grade;
+  options.value[i].grade = grade
 }
 
 function get_class(i: number, grade: UJGrade) {
   if (options.value[i].grade != grade) {
-    return "";
+    return ''
   }
 
   switch (grade) {
     case UJGrade.Bad:
-      return "bad";
+      return 'bad'
     case UJGrade.Inadequate:
-      return "inadequate";
+      return 'inadequate'
     case UJGrade.Passable:
-      return "passable";
+      return 'passable'
     case UJGrade.Fair:
-      return "fair";
+      return 'fair'
     case UJGrade.Good:
-      return "good";
+      return 'good'
     case UJGrade.VeryGood:
-      return "very-good";
+      return 'very-good'
     case UJGrade.Excellent:
-      return "excellent";
+      return 'excellent'
   }
 }
-
 </script>
 
 <template>
@@ -105,8 +127,14 @@ function get_class(i: number, grade: UJGrade) {
             <p>{{ option.name }}</p>
           </div>
           <div class="col">
-            <button v-for="rating in grades" :class="`rect-button ` + (get_class(i, rating))"
-              @click="change_rating(i, rating)">{{ ujgrade_to_string(rating) }}</button>
+            <button
+              v-for="rating in grades"
+              :class="`rect-button ` + get_class(i, rating)"
+              @click="change_rating(i, rating)"
+              :key="rating"
+            >
+              {{ ujgrade_to_string(rating) }}
+            </button>
           </div>
         </div>
       </div>

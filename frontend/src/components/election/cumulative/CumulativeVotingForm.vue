@@ -1,66 +1,68 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
-import { ElectionType, submit_generic_vote, type CumulativeElection } from '@/backend';
-import type { VoteOption } from '@/utils';
+import { ref, type PropType } from 'vue'
+import { ElectionType, submit_generic_vote, type CumulativeElection } from '@/backend'
+import type { VoteOption } from '@/utils'
 
 const props = defineProps({
   election: {
     type: Object as PropType<CumulativeElection>,
-    required: true,
+    required: true
   },
   options: {
     type: Array as PropType<VoteOption[]>,
-    required: true,
+    required: true
   },
   vote_token: {
     type: String,
-    required: false,
+    required: false
   }
-});
+})
 
 const emits = defineEmits({
   complete: () => true,
-  error: (error: string) => true,
-});
+  error: (error: string) => true
+})
 
-const loading = ref<boolean>(false);
+const loading = ref<boolean>(false)
 
-const votes = ref<number[]>(props.options.map(() => 0));
-const refresh_votes = ref<number>(0);
-
+const votes = ref<number[]>(props.options.map(() => 0))
+const refresh_votes = ref<number>(0)
 
 async function submit() {
   if (vote_sum() <= 0) {
-    emits(`error`, "you have voted too much");
-    return;
+    emits(`error`, 'you have voted too much')
+    return
   }
 
-  loading.value = true;
+  loading.value = true
 
-  const response = await submit_generic_vote(ElectionType.Cumulative, props.election.id, props.vote_token, votes.value);
-  const data = await response.text();
-  loading.value = false;
+  const response = await submit_generic_vote(
+    ElectionType.Cumulative,
+    props.election.id,
+    props.vote_token,
+    votes.value
+  )
+  const data = await response.text()
+  loading.value = false
   if (!response.ok) {
-    emits(`error`, data);
-    return;
+    emits(`error`, data)
+    return
   }
 
-  emits(`complete`);
+  emits(`complete`)
 }
 
-
 function vote_changed() {
-  refresh_votes.value++;
+  refresh_votes.value++
 }
 
 function vote_sum(): number {
-  let sum = 0;
+  let sum = 0
   for (const number of votes.value) {
-    sum += number;
+    sum += number
   }
-  return sum;
+  return sum
 }
-
 </script>
 
 <template>
@@ -79,7 +81,7 @@ function vote_sum(): number {
             <p>Votes</p>
           </div>
         </div>
-        <div v-for="(option, i) in options" :key="option.index" class="row">
+        <div v-for="option in options" :key="option.index" class="row">
           <div class="col">
             <p>{{ option.name }}</p>
           </div>
@@ -99,23 +101,23 @@ function vote_sum(): number {
 }
 
 div.row:hover {
-  background-color: #E8AB8C;
+  background-color: #e8ab8c;
 }
 
 div.row:nth-child(2n):hover {
-  background-color: #E8AB8C;
+  background-color: #e8ab8c;
 }
 
 div.row:nth-child(2n) {
-  background-color: #FAD8C0;
+  background-color: #fad8c0;
 }
 
 div.row {
-  background-color: #FDE5D0;
+  background-color: #fde5d0;
 }
 
 div.row.header {
-  background-color: #A2F4B9;
+  background-color: #a2f4b9;
 }
 
 div.table {

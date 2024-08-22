@@ -1,61 +1,67 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
-import { ElectionType, submit_generic_vote, type GenericElection } from '@/backend';
-import type { VoteOption } from '@/utils';
+import { ref, type PropType } from 'vue'
+import { ElectionType, submit_generic_vote, type GenericElection } from '@/backend'
+import type { VoteOption } from '@/utils'
 
 const props = defineProps({
   election: {
     type: Object as PropType<GenericElection>,
-    required: true,
+    required: true
   },
   options: {
     type: Array as PropType<VoteOption[]>,
-    required: true,
+    required: true
   },
   vote_token: {
     type: String,
-    required: false,
+    required: false
   }
-});
+})
 
 const emits = defineEmits({
   complete: () => true,
-  error: (error: string) => true,
-});
+  error: (error: string) => true
+})
 interface StarVoteOption extends VoteOption {
-  points: number;
+  points: number
 }
 
-const loading = ref<boolean>(false);
-const options = ref<StarVoteOption[]>(props.options.map((option) => {
-  return {
-    ...option,
-    points: 0,
-  };
-}));
-
+const loading = ref<boolean>(false)
+const options = ref<StarVoteOption[]>(
+  props.options.map((option) => {
+    return {
+      ...option,
+      points: 0
+    }
+  })
+)
 
 async function submit() {
-  const candidates = props.election.options;
+  const candidates = props.election.options
 
-  const vote: number[] = [];
+  const vote: number[] = []
   for (let option_index = 0; option_index < candidates.length; option_index++) {
-    const approve = options.value.find(option => option.index == option_index)?.points as number;
-    vote.push(approve);
+    const approve = options.value.find((option) => option.index == option_index)?.points as number
+    vote.push(approve)
   }
 
-  loading.value = true;
+  loading.value = true
 
-  const response = await submit_generic_vote(ElectionType.Star, props.election.id, props.vote_token, vote);
-  const data = await response.text();
-  loading.value = false;
+  const response = await submit_generic_vote(
+    ElectionType.Star,
+    props.election.id,
+    props.vote_token,
+    vote
+  )
+  const data = await response.text()
+  loading.value = false
   if (!response.ok) {
-    emits(`error`, data);
-    console.log(`ERROR: ${data}`);
-    return;
+    emits(`error`, data)
+    console.log(`ERROR: ${data}`)
+    return
   }
 
-  emits(`complete`);
+  emits(`complete`)
 }
 </script>
 
@@ -74,13 +80,19 @@ async function submit() {
             <p>🌟Stars🌟</p>
           </div>
         </div>
-        <div v-for="(option, i) in options" :key="option.index" class="row">
+        <div v-for="option in options" :key="option.index" class="row">
           <div class="col">
             <p>{{ option.name }}</p>
           </div>
           <div class="col">
-            <button v-for="i in 6" @click="option.points = i - 1"
-              :class="option.points == (i - 1) ? `star-btn selected` : `star-btn`"><span>{{ i - 1 }}</span></button>
+            <button
+              v-for="i in 6"
+              @click="option.points = i - 1"
+              :class="option.points == i - 1 ? `star-btn selected` : `star-btn`"
+              :key="i"
+            >
+              <span>{{ i - 1 }}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -100,8 +112,30 @@ async function submit() {
   height: 60px;
   line-height: 60px;
   text-align: center;
-  -webkit-clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  -webkit-clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
   overflow: visible;
   position: relative;
 }
@@ -118,25 +152,24 @@ async function submit() {
   background-color: gold;
 }
 
-
 div.row:hover {
-  background-color: #E8AB8C;
+  background-color: #e8ab8c;
 }
 
 div.row:nth-child(2n):hover {
-  background-color: #E8AB8C;
+  background-color: #e8ab8c;
 }
 
 div.row:nth-child(2n) {
-  background-color: #FAD8C0;
+  background-color: #fad8c0;
 }
 
 div.row {
-  background-color: #FDE5D0;
+  background-color: #fde5d0;
 }
 
 div.row.header {
-  background-color: #A2F4B9;
+  background-color: #a2f4b9;
 }
 
 div.table {
