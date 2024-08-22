@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import ElectionTypePicker from './ElectionTypePicker.vue'
 import {
   ElectionType,
@@ -10,14 +10,20 @@ import {
 import InfoCom from './InfoCom.vue'
 import QuotaPreferentialVicLabor2024Test from './election/quota_preferential_vic_labor_2024/QuotaPreferentialVicLabor2024Test.vue'
 import QuotaPreferentialVicLabor2024Result from './election/quota_preferential_vic_labor_2024/results/QuotaPreferentialVicLabor2024Result.vue'
+import router from '@/router'
+import LZUTF8 from 'lzutf8'
 
-const selected_election_type = ref<ElectionType>(ElectionType.QuotaPreferentialVicLabor2024)
+const previous = ref<SavedTest | null>(read_previous_from_query())
+const selected_election_type = ref<ElectionType>(
+  previous.value?.election_type || ElectionType.QuotaPreferentialVicLabor2024
+)
 const loading = ref(false)
 const error = ref<String | null>(null)
 const refresh_create = ref(0)
 const request_dirty = ref(false)
 const refresh_results = ref(0)
 const has_error = ref(true)
+const copied = ref(false)
 
 const unsupported_election_types = [
   ElectionType.PreferentialVoting,
@@ -65,6 +71,48 @@ const request_payload = ref<TestElectionBase>({
   bundles: []
 })
 
+export interface SavedTest {
+  election_type: ElectionType
+  request_payload: TestElectionBase
+}
+
+watch(
+  request_payload,
+  () => {
+    request_dirty.value = true
+    copied.value = false
+    // Push as json to the query string
+    const json = JSON.stringify({
+      election_type: selected_election_type.value,
+      request_payload: request_payload.value
+    })
+    // This lib has not been updated in 10 years but works great fuck yeah
+    const compressed = LZUTF8.compress(json, { outputEncoding: 'Base64' })
+    router.push({
+      query: {
+        previous: compressed
+      }
+    })
+  },
+  {
+    deep: true
+  }
+)
+
+function read_previous_from_query(): SavedTest | null {
+  const previous_raw = router.currentRoute.value.query.previous
+  if (previous_raw) {
+    const raw_str = LZUTF8.decompress(previous_raw as string, {
+      inputEncoding: 'Base64',
+      outputEncoding: 'String'
+    }) as string
+    const previous: SavedTest = JSON.parse(raw_str)
+    return previous
+  }
+
+  return null
+}
+
 const response = ref<GenericElectionResult | null>(null)
 
 async function submit() {
@@ -82,6 +130,17 @@ async function submit() {
   refresh_results.value++
   loading.value = false
 }
+
+function copy_data() {
+  // Copy the url to the clipboard
+  const url = window.location.href
+  navigator.clipboard.writeText(url)
+  copied.value = true
+}
+
+function clear_data() {
+  window.location.replace(window.location.pathname)
+}
 </script>
 
 <template>
@@ -96,6 +155,13 @@ async function submit() {
         :disabled="unsupported_election_types"
       />
       <br />
+      <div>
+        <p>Click here to copy the URL to your clipboard which contains all the voting data.</p>
+        <button @click="copy_data" :disabled="copied">{{ copied ? 'COPIED' : 'COPY URL' }}</button>
+        <p>Click here to clear the URL data</p>
+        <button @click="clear_data">CLEAR DATA</button>
+      </div>
+      <br />
       <div v-if="error">
         <p class="error-text">Error: {{ error }}</p>
         <br />
@@ -104,13 +170,14 @@ async function submit() {
       <div :key="selected_election_type">
         <QuotaPreferentialVicLabor2024Test
           v-if="selected_election_type === ElectionType.QuotaPreferentialVicLabor2024"
+          :bundles="previous?.request_payload.bundles"
+          :election="previous?.request_payload.election"
           @updated="
             (updated) => {
               request_payload = {
                 election: updated.election,
                 bundles: updated.bundles
               }
-              request_dirty = true
             }
           "
           @error="(error) => (has_error = error)"

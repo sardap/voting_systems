@@ -2,22 +2,17 @@
 import type { QuotaPreferentialVicLabor2024Candidate } from '@/backend'
 import { onMounted, ref, watch } from 'vue'
 
+const props = defineProps<{
+  candidates: QuotaPreferentialVicLabor2024Candidate[]
+}>()
+
 const emits = defineEmits<{
   (e: 'updated', value: QuotaPreferentialVicLabor2024Candidate[]): void
 }>()
 
 const min_candidates = ref(2)
 const max_candidates = ref(100)
-const candidates = ref<QuotaPreferentialVicLabor2024Candidate[]>([
-  {
-    name: '',
-    is_female: true
-  },
-  {
-    name: '',
-    is_female: false
-  }
-])
+const candidates = ref<QuotaPreferentialVicLabor2024Candidate[]>(props.candidates)
 
 watch(candidates.value, () => {
   emits('updated', candidates.value)

@@ -1,9 +1,20 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, type PropType, ref, watch } from 'vue'
 import QuotaPreferentialVicLabor2024Create from './QuotaPreferentialVicLabor2024Create.vue'
 import type { QuotaPreferentialVicLabor2024CreateElection } from '@/backend'
 import QuotaPreferentialVicLabor2024Ballot from './QuotaPreferentialVicLabor2024Ballot.vue'
 import type { VoteOption } from '@/utils'
+
+const props = defineProps({
+  election: {
+    type: Object as PropType<QuotaPreferentialVicLabor2024CreateElection>,
+    required: false
+  },
+  bundles: {
+    type: Array as PropType<{ count: number; vote: number[] }[]>,
+    required: false
+  }
+})
 
 const emit = defineEmits<{
   (
@@ -20,22 +31,24 @@ onMounted(() => {
   emit('error', true)
 })
 
-const create_election = ref<QuotaPreferentialVicLabor2024CreateElection>({
-  title: 'test',
-  elected_count: 5,
-  candidates: [
-    {
-      name: '',
-      is_female: true
-    },
-    {
-      name: '',
-      is_female: false
-    }
-  ],
-  require_token: false,
-  percent_female: 0.5
-})
+const create_election = ref<QuotaPreferentialVicLabor2024CreateElection>(
+  props.election || {
+    title: 'test',
+    elected_count: 2,
+    candidates: [
+      {
+        name: '',
+        is_female: true
+      },
+      {
+        name: '',
+        is_female: false
+      }
+    ],
+    require_token: false,
+    percent_female: 0.5
+  }
+)
 
 const create_election_changed = ref(0)
 
@@ -48,9 +61,16 @@ watch(create_election_changed, () => {
   })
 })
 
-const options_for_ballots = ref<VoteOption[]>([])
+const options_for_ballots = ref<VoteOption[]>(
+  create_election.value.candidates.map((candidate, index) => {
+    return {
+      index: index,
+      name: candidate.name
+    }
+  })
+)
 
-const ballots = ref<{ count: number; vote: number[] }[]>([])
+const ballots = ref<{ count: number; vote: number[] }[]>(props.bundles || [])
 
 const ballot_count = ref<number>(1)
 const current_ballot = ref<number[]>([])
@@ -95,6 +115,8 @@ function remove_ballot_bundle(index: number) {
     <div>
       <h2>Election Settings</h2>
       <QuotaPreferentialVicLabor2024Create
+        :candidates="create_election.candidates"
+        :elected_count="create_election.elected_count"
         @updated="
           (updated) => {
             create_election.candidates = updated.candidates

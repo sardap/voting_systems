@@ -19,6 +19,7 @@
     "@vueuse/integrations": "^10.0.2",
     "chart.js": "^4.3.0",
     "fetch": "^1.1.0",
+    "lzutf8": "^0.6.3",
     "pinia": "^2.0.32",
     "sortablejs": "^1.15.0",
     "uuid": "^9.0.0",
