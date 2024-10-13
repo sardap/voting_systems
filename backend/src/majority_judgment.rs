@@ -239,6 +239,22 @@ pub fn get_result(
     election: &MajorityJudgmentElection,
     votes: &[MajorityJudgmentVote],
 ) -> MajorityJudgmentResult {
+    return MajorityJudgmentResult {
+        options: election.options.clone(),
+        winner: 0,
+        vote_count: 0,
+        votes: Vec::new(),
+        best_median: Rating::Terrible,
+        starting_tally: Vec::new(),
+        runoff: MajorityJudgmentRunoff {
+            modified_tally: Vec::new(),
+            best_median: Rating::Terrible,
+            participants: Vec::new(),
+            winners: Vec::new(),
+        },
+        score_result: None,
+    };
+
     let mut tally = Vec::new();
     for i in 0..election.options.len() {
         tally.push(MajorityJudgmentTally {
