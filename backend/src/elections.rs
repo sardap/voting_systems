@@ -3,8 +3,9 @@ use std::collections::HashMap;
 use diesel::{ExpressionMethods, OptionalExtension, QueryDsl, RunQueryDsl};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, serde_valid::Validate, Debug, Clone)]
 pub struct CreateElection {
+    #[validate(max_length = 50)]
     pub title: String,
     pub requires_token: bool,
 }
@@ -148,12 +149,47 @@ pub fn change_election_voting_locked(
         .unwrap();
 }
 
+pub fn valid_election_option(
+    options: &[String],
+) -> Result<(), Vec<serde_valid::validation::Error>> {
+    let http_re = regex::Regex::new(
+        r"(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])",
+    )
+    .unwrap();
+
+    let mut errors = vec![];
+
+    for option in options {
+        if option.is_empty() {
+            errors.push(serde_valid::validation::Error::Custom(
+                "Option cannot be empty".to_string(),
+            ));
+        }
+
+        if http_re.is_match(option) {
+            errors.push(serde_valid::validation::Error::Custom(
+                "Option cannot be a URL".to_string(),
+            ));
+        }
+
+        if option.len() > 50 {
+            errors.push(serde_valid::validation::Error::Custom(
+                "Option cannot be longer than 50 characters".to_string(),
+            ));
+        }
+    }
+
+    Ok(())
+}
+
 #[macro_export]
 macro_rules! create_election {
     ($name:ident) => {
-        #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+        #[derive(serde::Serialize, serde::Deserialize, serde_valid::Validate, Debug, Clone)]
         pub struct $name {
             pub election: crate::models::Election,
+            #[validate(max_items = 100)]
+            #[validate(custom = crate::elections::valid_election_option)]
             pub options: Vec<String>,
         }
 

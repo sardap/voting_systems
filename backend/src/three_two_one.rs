@@ -17,9 +17,11 @@ create_election!(ThreeTwoOneElection);
 
 create_get_election!(crate::schema::three_two_one_elections, ThreeTwoOneElection);
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, serde_valid::Validate, Debug, Clone)]
 pub struct ThreeTwoOneCreateElection {
     pub election_base: CreateElection,
+    #[validate(max_items = 100)]
+    #[validate(custom = crate::elections::valid_election_option)]
     pub options: Vec<String>,
 }
 

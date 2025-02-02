@@ -14,9 +14,11 @@ use crate::{
 
 // HERE https://en.m.wikipedia.org/wiki/Usual_judgment
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, serde_valid::Validate, Debug, Clone)]
 pub struct UsualJudgmentElection {
     pub election: models::Election,
+    #[validate(max_items = 100)]
+    #[validate(custom = crate::elections::valid_election_option)]
     pub options: Vec<String>,
 }
 

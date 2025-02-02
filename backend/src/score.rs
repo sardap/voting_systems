@@ -11,9 +11,11 @@ use crate::{
     elections::{self, CreateElection, CreateElectionResult},
 };
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, serde_valid::Validate, Debug, Clone)]
 pub struct ScoreElection {
     pub election: crate::models::Election,
+    #[validate(max_items = 100)]
+    #[validate(custom = crate::elections::valid_election_option)]
     pub options: Vec<String>,
     pub max_score: usize,
 }

@@ -1,5 +1,6 @@
 use diesel::{ExpressionMethods, OptionalExtension, QueryDsl, RunQueryDsl};
 use serde::{Deserialize, Serialize};
+use serde_valid::Validate;
 
 use crate::{
     create_add_election, create_add_vote, create_election, create_get_election, create_get_votes,
@@ -13,9 +14,11 @@ create_get_election!(
     AntiPluralityElection
 );
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Validate, Debug, Clone)]
 pub struct AntiPluralityCreateElection {
     pub election_base: CreateElection,
+    #[validate(max_items = 100)]
+    #[validate(custom = crate::elections::valid_election_option)]
     pub options: Vec<String>,
 }
 

@@ -27,9 +27,11 @@ impl Into<models::PreferentialElection> for PreferentialElection {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, serde_valid::Validate, Debug, Clone)]
 pub struct PreferentialCreateElection {
     pub election_base: CreateElection,
+    #[validate(max_items = 100)]
+    #[validate(custom = crate::elections::valid_election_option)]
     pub options: Vec<String>,
 }
 

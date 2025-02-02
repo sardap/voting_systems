@@ -11,9 +11,11 @@ create_election!(BordaCountElection);
 
 create_get_election!(crate::schema::borda_count_elections, BordaCountElection);
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, serde_valid::Validate, Debug, Clone)]
 pub struct BordaCountCreateElection {
     pub election_base: CreateElection,
+    #[validate(max_items = 100)]
+    #[validate(custom = crate::elections::valid_election_option)]
     pub options: Vec<String>,
 }
 
